@@ -30,6 +30,13 @@
           <!-- To-do card -->
           <div class="card">
             <div class="card-content">
+              <% console.log(error) %> <% if(error !== null) { %>
+              <div class="row teal lighten-4">
+                <div class="col s12">
+                  <p class="center-align"><%= error %></p>
+                </div>
+              </div>
+              <% } %>
               <span class="card-title">To-Do List</span>
               <div class="row">
                 <form class="col s12" method="post" action="/">

@@ -1,3 +1,4 @@
+const { error } = require('console');
 const express = require('express');
 const app = express();
 const fs = require('fs');
@@ -38,10 +39,14 @@ app.get('/', (req, res) => {
     readFile('./tasks.json')
         .then(tasks => {
             console.log(tasks)
-            res.render('index', { tasks: tasks })
+            res.render('index', {
+                tasks: tasks,
+                error: null
+            })
         })
 })
 
+// DELETE SINGLE
 app.get('/delete-task/:taskId', (req, res) => {
     let deletedTaskId = parseInt(req.params.taskId);
     readFile('./tasks.json')
@@ -57,6 +62,7 @@ app.get('/delete-task/:taskId', (req, res) => {
         })
 })
 
+// DELETE ALL
 app.get('/delete-tasks', (req, res) => {
     // Read data from file
     readFile('./tasks.json')
@@ -76,26 +82,39 @@ app.get('/delete-tasks', (req, res) => {
 app.use(express.urlencoded({ extended: true }));
 
 app.post('/', (req, res) => {
-    readFile('./tasks.json')
-        .then(tasks => {
+    // Check form data
+    let error = null;
+    if (req.body.tasks.trim().length == 0) {
+        error = 'Please check your formating';
+        readFile('./tasks.json')
+            .then(tasks => {
+                res.render('index', {
+                    tasks: tasks,
+                    error: error
+                })
+            })
+    } else {
+        readFile('./tasks.json')
+            .then(tasks => {
 
-            let index;
-            if (tasks.length === 0) {
-                index = 0;
-            } else {
-                index = tasks[tasks.length - 1].id + 1;
-            }
+                let index;
+                if (tasks.length === 0) {
+                    index = 0;
+                } else {
+                    index = tasks[tasks.length - 1].id + 1;
+                }
 
-            const newTask = {
-                "id": index,
-                "task": req.body.tasks
-            }
+                const newTask = {
+                    "id": index,
+                    "task": req.body.tasks
+                }
 
-            tasks.push(newTask);
-            data = JSON.stringify(tasks, null, 2);
-            writeFile('tasks.json', data);
-            res.redirect('/');
-        })
+                tasks.push(newTask);
+                data = JSON.stringify(tasks, null, 2);
+                writeFile('tasks.json', data);
+                res.redirect('/');
+            })
+    }
 })
 
 app.listen(3001, () => {
