@@ -9,6 +9,15 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
     />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <style>
+      .close {
+        float: right;
+      }
+    </style>
   </head>
   <body>
     <div class="container">
@@ -43,7 +52,12 @@
             <div class="card-action">
               <ul class="collection">
                 <% tasks.forEach((task) => { %>
-                <li class="collection-item"><%= task %></li>
+                <li class="collection-item">
+                  <%= task.task %>
+                  <a href="delete-task/<%= task.id %>"
+                    ><i class="small material-icons close">clear</i></a
+                  >
+                </li>
                 <% }) %>
               </ul>
             </div>
