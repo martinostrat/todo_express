@@ -57,6 +57,21 @@ app.get('/delete-task/:taskId', (req, res) => {
         })
 })
 
+app.get('/delete-tasks', (req, res) => {
+    // Read data from file
+    readFile('./tasks.json')
+        .then(tasks => {
+            // Deletes entries from tasks.json
+            if (tasks.length > 0) {
+                tasks.splice(0, tasks.length);
+            }
+            // Writes new empty entry to tasks.json
+            data = JSON.stringify(tasks, null, 2);
+            writeFile('tasks.json', data);
+            res.redirect('/');
+        })
+})
+
 
 app.use(express.urlencoded({ extended: true }));
 
