@@ -5,6 +5,7 @@ const fs = require('fs');
 
 // Templates for views
 const path = require('path');
+const { stringify } = require('querystring');
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -38,10 +39,9 @@ app.get('/', (req, res) => {
     // Read data from file
     readFile('./tasks.json')
         .then(tasks => {
-            console.log(tasks)
             res.render('index', {
                 tasks: tasks,
-                error: null
+                error: null,
             })
         })
 })
@@ -78,8 +78,60 @@ app.get('/delete-tasks', (req, res) => {
         })
 })
 
+// EDIT
+app.get('/edit/:taskId', (req, res) => {
+    let selected = parseInt(req.params.taskId);
+    readFile('./tasks.json')
+        .then(tasks => {
+            tasks.forEach(task => {
+                if (Object.is(selected, task.id)) {
+                    res.render('edit', {
+                        tasks: tasks,
+                        selectedId: task.id,
+                        error: null
+                    })
+                }
+            })
+        })
+})
 
 app.use(express.urlencoded({ extended: true }));
+
+// SAVE EDIT AND UPDATE "/"
+app.post('/update-task/:taskId', (req, res) => {
+    let taskId = parseInt(req.params.taskId);
+    let newTask = req.body.task;
+    let error = null;
+
+    if (req.body.task.trim().length == 0) {
+        error = 'Please check your formating';
+        readFile('./tasks.json')
+            .then(tasks => {
+                res.render('edit', {
+                    error: error,
+                    tasks: tasks,
+                    selectedId: taskId
+                })
+            })
+
+    } else {
+        readFile('./tasks.json')
+            .then(tasks => {
+                // Update matching tasks "task" value
+                tasks.forEach(task => {
+                    if (task.id === taskId) {
+                        task.task = newTask;
+                    }
+                })
+
+                // Write changes to json file
+                data = JSON.stringify(tasks, null, 2);
+                writeFile('tasks.json', data);
+                res.redirect('/');
+            })
+    }
+})
+
 
 app.post('/', (req, res) => {
     // Check form data

@@ -1,10 +1,18 @@
 [
   {
+    "id": 0,
+    "task": "sõna"
+  },
+  {
     "id": 1,
-    "task": "html"
+    "task": "suva"
   },
   {
     "id": 2,
-    "task": "css"
+    "task": "3+"
+  },
+  {
+    "id": 3,
+    "task": "viimane"
   }
 ]
